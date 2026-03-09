@@ -368,10 +368,28 @@ th{background:#f8f9fa;font-weight:bold;color:#555;white-space:nowrap}
             <button onclick="navTo('Adjustment Entry')" id="btn-Adjustment Entry"><i class="fas fa-exchange-alt"></i> Adjustment Entry</button>
             <button onclick="navTo('reports')" id="btn-reports"><i class="fas fa-file-alt"></i> Reports</button>
             <div id="admin-menu">
-                <button onclick="navTo('agents')" id="btn-agents"><i class="fas fa-user-tie"></i> Agents</button>
-                <button onclick="navTo('ledgers')" id="btn-ledgers"><i class="fas fa-book"></i> Account Master</button>
-                <button onclick="navTo('accountTypes')" id="btn-accountTypes"><i class="fas fa-cog"></i> Account Types</button>
-                <button onclick="navTo('groups')" id="btn-groups"><i class="fas fa-layer-group"></i> Groups</button>
+                
+                <button onclick="document.getElementById('agent-submenu').classList.toggle('hidden')" id="btn-agents">
+    <i class="fas fa-user-tie"></i> Agents <i class="fas fa-caret-down" style="float:right; margin-top:4px;"></i>
+</button>
+
+<div id="agent-submenu" class="hidden" style="background: rgba(0,0,0,0.1);">
+    <button onclick="openAgentTab('col')" style="padding-left: 40px;"><i class="fas fa-hand-holding-usd"></i> Collection</button>
+    <button onclick="openAgentTab('cre')" style="padding-left: 40px;"><i class="fas fa-user-plus"></i> Create Agent</button>
+    <button onclick="openAgentTab('ass')" style="padding-left: 40px;"><i class="fas fa-tasks"></i> Assign Accounts</button>
+</div>
+                
+             <button onclick="document.getElementById('master-submenu').classList.toggle('hidden')">
+    <i class="fas fa-folder"></i> Master <i class="fas fa-caret-down" style="float:right; margin-top:4px;"></i>
+</button>
+
+<div id="master-submenu" class="hidden" style="background: rgba(0,0,0,0.1);">
+    <button onclick="navTo('ledgers')" id="btn-ledgers" style="padding-left: 40px;"><i class="fas fa-book"></i> Account Master</button>
+    <button onclick="navTo('accountTypes')" id="btn-accountTypes" style="padding-left: 40px;"><i class="fas fa-cog"></i> Account Types</button>
+    <button onclick="navTo('groups')" id="btn-groups" style="padding-left: 40px;"><i class="fas fa-layer-group"></i> Groups</button>
+</div>
+                
+                
                 <button onclick="navTo('settings')" id="btn-settings"><i class="fas fa-cog"></i> Settings</button>
             </div>
             <button onclick="logout()" style="color: #e74c3c;"><i class="fas fa-sign-out-alt"></i> Logout</button>
@@ -726,11 +744,18 @@ th{background:#f8f9fa;font-weight:bold;color:#555;white-space:nowrap}
     </div>
 </div>
 
-       <div id="view-reports" class="hidden">
+               <div id="view-reports" class="hidden">
             <div id="report-menu">
+                
                 <div class="card">
-                    <h4>Report Filters</h4>
-                    <div class="flex-col">
+                    <div class="flex-between">
+                        <h4 style="margin: 0;">Reports</h4>
+                        <button onclick="document.getElementById('rep-filter-box').classList.toggle('hidden')" class="btn btn-outline btn-sm">
+                            <i class="fas fa-filter"></i> Filters
+                        </button>
+                    </div>
+                    
+                    <div id="rep-filter-box" class="flex-col hidden" style="margin-top: 15px; padding-top: 15px; border-top: 1px solid #eee;">
                         <div class="flex"><input type="date" id="rep-from"><input type="date" id="rep-to"></div>
                         <select id="rep-cust-select" onchange="if(!document.getElementById('report-display').classList.contains('hidden')) showReport('cust_bal_book')">
                             <option value="">All Customers</option>
@@ -743,26 +768,19 @@ th{background:#f8f9fa;font-weight:bold;color:#555;white-space:nowrap}
                 
                 <div class="dash-grid">
                     <div class="report-btn-card" onclick="showReport('cust_list')"><i class="fas fa-users"></i> Cust List</div>
-<div class="report-btn-card" onclick="showReport('daybook')"><i class="fas fa-calendar-day"></i> Day Book</div>
-
-<div class="report-btn-card" onclick="openCustReportSearch()"><i class="fas fa-book"></i> Bal Book</div>
-
-<div class="report-btn-card" onclick="openTypeSearch()">
-    <i class="fas fa-list-ol"></i> Accounts Bal
-</div>
-                                                                                                                 <div class="report-btn-card" onclick="openLedgerSearch()"><i class="fas fa-list"></i> Ledger</div>
-                    <div class="report-btn-card" onclick="showReport('loans')"><i class="fas fa-money-bill"></i>     Loans</div>
-                    <div id="btn-schedule" class="report-btn-card"         onclick="showReport('schedule')"><i class="fas fa-exchange-alt"></i> Rec/Pay</div>
+                    <div class="report-btn-card" onclick="showReport('daybook')"><i class="fas fa-calendar-day"></i> Day Book</div>
+                    <div class="report-btn-card" onclick="openCustReportSearch()"><i class="fas fa-book"></i> Bal Book</div>
+                    <div class="report-btn-card" onclick="openTypeSearch()"><i class="fas fa-list-ol"></i> Accounts Bal</div>
+                    <div class="report-btn-card" onclick="openLedgerSearch()"><i class="fas fa-list"></i> Ledger</div>
+                    <div class="report-btn-card" onclick="showReport('loans')"><i class="fas fa-money-bill"></i> Loans</div>
+                    <div id="btn-schedule" class="report-btn-card" onclick="showReport('schedule')"><i class="fas fa-exchange-alt"></i> Rec/Pay</div>
                     <div id="btn-pl" class="report-btn-card" onclick="showReport('pl')"><i class="fas fa-chart-line"></i> P & L</div>
                     <div id="btn-bs" class="report-btn-card" onclick="showReport('bs')"><i class="fas fa-balance-scale"></i> Balance Sheet</div>
                     <div class="report-btn-card" onclick="handleAgentReportClick()"><i class="fas fa-user-tie"></i> Agent</div>
                 </div>
+                
             </div>
-
-
-
-                            
-        <div id="report-display" class="hidden">
+                                                               <div id="report-display" class="hidden">
         <div class="report-header-actions" style="margin-bottom:15px; display: flex; justify-content: space-between; align-items: center; background: white; padding: 10px; border-radius: 8px;">
             
             <div class="desktop-actions">
@@ -793,7 +811,7 @@ th{background:#f8f9fa;font-weight:bold;color:#555;white-space:nowrap}
 </div>      
                
          <div id="view-agents" class="hidden">
-         <div class="card" style="border-left: 5px solid #2ecc71; background:#f0fff4;">
+         <div class="card" id="ag-col" style="border-left: 5px solid #2ecc71; background:#f0fff4;">             
     <h3 style="color:#27ae60"><i class="fas fa-hand-holding-usd"></i> Receive Cash from Agent</h3>
     <p style="font-size:0.85rem; color:#666; margin-bottom:15px;">Use this when an Agent transfers their collected cash to the Admin.</p>
     
@@ -818,8 +836,8 @@ th{background:#f8f9fa;font-weight:bold;color:#555;white-space:nowrap}
 </div>
  
 
-  <div class="card">
-                <h3>Agents</h3>
+  <div class="card" id="ag-cre">
+    <h3>Agents</h3>
                 <form id="agent-form" class="flex">
                     <input id="agent-user" placeholder="Username" required>
                     <input id="agent-pass" placeholder="Password" required>
@@ -833,7 +851,7 @@ th{background:#f8f9fa;font-weight:bold;color:#555;white-space:nowrap}
                 </div>
             </div>
             
-            <div class="card" style="border-top:4px solid #f39c12;">
+            <div class="card" id="ag-ass" style="border-top:4px solid #f39c12;">
                 <h3>Assign Accounts to Agent</h3>
                 
                 <div style="margin-bottom: 15px; margin-top: 10px;">
@@ -1434,9 +1452,13 @@ const storedSettings=safeJSON('fbp_m_set',{});
 
 const DB={
     customers:safeJSON('fbp_m_custs',[]),
-    accs:safeJSON('fbp_m_accs',[
+        accs:safeJSON('fbp_m_accs',[
         {id:1,name:"Cash",group:"Cash",type:"cash",category:"ledger",balance:0,status:"active",opDate:new Date().toISOString().split('T')[0]},
-        {id:2,name:"Bank",group:"Bank",type:"bank",category:"ledger",balance:0,status:"active",opDate:new Date().toISOString().split('T')[0]}
+        {id:2,name:"Bank",group:"Bank",type:"bank",category:"ledger",balance:0,status:"active",opDate:new Date().toISOString().split('T')[0]},
+        // --- NEW DEFAULT ACCOUNTS ---
+        {id:3,name:"Interest",group:"Income",type:"general",category:"ledger",balance:0,status:"active",opDate:new Date().toISOString().split('T')[0]},
+        {id:4,name:"Rent",group:"Expense",type:"general",category:"ledger",balance:0,status:"active",opDate:new Date().toISOString().split('T')[0]},
+        {id:5,name:"Other Charges",group:"Expense",type:"general",category:"ledger",balance:0,status:"active",opDate:new Date().toISOString().split('T')[0]}
     ]),
     trans:safeJSON('fbp_m_trans',[]),
     groups:safeJSON('fbp_m_groups',[
@@ -1544,6 +1566,8 @@ document.addEventListener('DOMContentLoaded',()=>{
     // Initialize forms
     document.getElementById('cust-form').addEventListener('submit', function(e){
         e.preventDefault();
+        if (DB.customers.some(c => c.name.toLowerCase() === document.getElementById('cust-name').value.toLowerCase())) return alert("Error: Customer Name already exists!");
+        
         const newID='DR'+String(DB.customers.length+1).padStart(4,'0');
         DB.customers.push({id:Date.now(),custNo:newID,name:document.getElementById('cust-name').value,ref:document.getElementById('cust-ref').value});
         saveDB(); e.target.reset(); updateCustSelect(); alert('Customer Created');
@@ -1561,30 +1585,18 @@ document.getElementById('trans-form').addEventListener('submit', function(e) {
 
     if (!primaryAcc || !secondaryAcc) return alert("Account not found");
 
-    // Determine the direction for the primary account
-    let primaryChange; // raw change (positive = debit-like, negative = credit-like)
-    if (type === 'deposit' || type === 'repay_princ') {
-        primaryChange = -amt; // primary gets credited
-    } else if (type === 'withdraw' || type === 'disburse') {
-        primaryChange = +amt; // primary gets debited
-    } else {
-        return alert("Unsupported transaction type");
+        // 1. Update the Customer's Account Balance using your getTxMod helper
+    primaryAcc.balance += (amt * getTxMod(primaryAcc, type));
+
+    // 2. Update the Office Cash Balance (Only if Admin is doing it)
+    if (session.role === 'admin') {
+        let secondaryChange = (type === 'deposit' || type === 'repay_princ') ? +amt : -amt;
+        secondaryAcc.balance += secondaryChange;
     }
 
-    // Apply the normal balance sign to get the actual balance change
-    const primarySign = getNormalBalanceSign(primaryAcc);
-    primaryAcc.balance += primaryChange * primarySign;
 
-    // Determine cash/bank change (secondary is always an asset)
-    let secondaryChange;
-    if (type === 'deposit' || type === 'repay_princ') {
-        secondaryChange = +amt; // cash is debited (increases)
-    } else {
-        secondaryChange = -amt; // cash is credited (decreases)
-    }
-    secondaryAcc.balance += secondaryChange;
 
-    // Create and save the transaction record
+    // 3. Save the transaction record
     const newTrans = {
         id: Date.now(),
         date: document.getElementById('trans-date').value,
@@ -1593,9 +1605,10 @@ document.getElementById('trans-form').addEventListener('submit', function(e) {
         type: type,
         amt: amt,
         desc: document.getElementById('trans-desc').value,
-        by: session.role,
-        agentId: session.id || null
+        by: session.role, // This tracks if it was 'agent' or 'admin'
+        agentId: session.id === 'admin' ? null : session.id
     };
+    
     DB.trans.push(newTrans);
     saveDB();
     cancelTransaction();
@@ -1606,12 +1619,14 @@ document.getElementById('trans-form').addEventListener('submit', function(e) {
     }
 
 
+
     });  // <--- ADD THIS LINE HERE to close the transaction form listener
 
     document.getElementById('agent-form').addEventListener('submit',function(e){
  
         e.preventDefault();
-        DB.agents.push({id:Date.now(),user:document.getElementById('agent-user').value,pass:document.getElementById('agent-pass').value,assigned:[]});
+      if (DB.agents.some(a => a.user.toLowerCase() === document.getElementById('agent-user').value.toLowerCase())) return alert("Error: Agent Username already exists!");
+                DB.agents.push({id:Date.now(),user:document.getElementById('agent-user').value,pass:document.getElementById('agent-pass').value,assigned:[]});
         saveDB(); e.target.reset(); updateUI();
     });
     
@@ -1644,7 +1659,9 @@ document.getElementById('trans-form').addEventListener('submit', function(e) {
 });
     
     document.getElementById('ledger-form').addEventListener('submit',function(e){
-        e.preventDefault();
+        e.preventDefault();        
+        if (DB.accs.some(a => a.name.toLowerCase() === document.getElementById('ledger-name').value.toLowerCase())) return alert("Error: Account Name already exists!");
+
         DB.accs.push({
             id:Date.now(),
             name:document.getElementById('ledger-name').value,
@@ -1910,7 +1927,7 @@ function initSession(role, id, username) {
     document.getElementById('user-role-display').innerText = `User: ${username} (${role.toUpperCase()})`;
     
     // ... rest of your existing logic for hiding/showing admin menus ...
-    const els = ['admin-menu', 'cust-create-card', 'view-agents', 'view-ledgers', 'view-accountTypes', 'view-groups'];
+    const els = ['admin-menu', 'cust-create-card', 'view-agents', 'view-ledgers', 'view-accountTypes', 'view-groups','btn-Adjustment Entry'];
     els.forEach(eid => {
         const el = document.getElementById(eid);
         if (el) el.classList.toggle('hidden', role !== 'admin');
@@ -1919,13 +1936,18 @@ function initSession(role, id, username) {
     navTo('dashboard');
     updateUI();
 }
+
 function logout() {
-    // 1. Ask user for backup
-    if (confirm("Would you like to download a Backup before logging out?")) {
-        // 2. Perform backup
-        backupData();
+    // 1. First, confirm they actually want to exit
+    if (confirm("Are you sure you want to Logout?")) {
         
-       try {
+        // 2. Then, ask if they want a backup
+        if (confirm("Would you like to download a Backup before exiting?")) {
+            backupData();
+        }
+        
+        // 3. Finally, clear session and return to login screen
+        try {
             localStorage.removeItem('fbp_session');
         } catch(e) {}
         location.reload();
@@ -2008,6 +2030,14 @@ function navTo(page){
             else dbBtn.classList.remove('hidden');
         }
     }
+    
+           // 3. Hide Accounts Bal for Agents
+        const accBalBtn = document.querySelector('div[onclick="openTypeSearch()"]');
+        if(accBalBtn) {
+            if(session.role === 'agent') accBalBtn.classList.add('hidden');
+            else accBalBtn.classList.remove('hidden');
+        }
+         
     
     // C. AGENTS PAGE (Populate Handover Dropdown)
     if (page === 'agents') {
@@ -2547,9 +2577,8 @@ Customer: ${cust ? cust.name : 'General'}
 Account: ${acc ? acc.accNo : '-'}
 Type: ${t.type.toUpperCase()}
 Amount: ${fmt.format(t.amt)}
+Available Bal: ${acc ? fmt.format(acc.balance) : '₹0.00'}
 Details: ${t.desc || 'N/A'}
---------------------------------
-   Thank you for your business!
 --------------------------------
     `;
 
@@ -2843,48 +2872,63 @@ function generateLedger(id) {
     }).sort((a, b) => new Date(a.date) - new Date(b.date));
 
     transactions.forEach(t => {
+       
         // --- FIX: Initialize variables here to prevent ReferenceError ---
-        let dr = ''; 
+       
+                let dr = ''; 
         let cr = ''; 
         let impact = 0;
         let displayDesc = t.desc || t.type;
 
         const group = DB.groups.find(g => g.name === ac.group);
-        const isAsset = group && group.type === 'Asset';
+        const isAssetOrExpense = group && (group.type === 'Asset' || group.type === 'Expense');
 
-        if (t.accId === id) {
-            // SIDE A: Primary Account (e.g., Loan or Savings)
-            impact = t.amt * getTxMod(ac, t.type);
-            
-            if (isAsset) {
-                // For Assets (Loans): Increase = Debit, Decrease = Credit
-                dr = impact > 0 ? fmt.format(Math.abs(impact)) : '';
-                cr = impact < 0 ? fmt.format(Math.abs(impact)) : '';
-            } else {
-                // For Liabilities (Savings): Increase = Credit, Decrease = Debit
-                cr = impact > 0 ? fmt.format(Math.abs(impact)) : '';
-                dr = impact < 0 ? fmt.format(Math.abs(impact)) : '';
-            }
-        } else if (t.secAccId === id) {
-            // SIDE B: Cash/Bank Account
-            if (['deposit', 'repay_princ', 'income', 'agent_handover'].includes(t.type)) {
-                impact = t.amt; // Cash In is always a Debit
+        if (t.type === 'adjustment') {
+            // FIX: Make Ledger understand Debit vs Credit adjustments
+            if (t.accId === id) { 
                 dr = fmt.format(t.amt);
-            } else {
-                impact = -t.amt; // Cash Out is always a Credit
+                impact = isAssetOrExpense ? t.amt : -t.amt;
+            } else if (t.secAccId === id) { 
                 cr = fmt.format(t.amt);
+                impact = isAssetOrExpense ? -t.amt : t.amt;
+            }
+        } else {
+            // Normal Logic
+            if (t.accId === id) {
+                impact = t.amt * getTxMod(ac, t.type);
+                if (isAssetOrExpense) {
+                    dr = impact > 0 ? fmt.format(Math.abs(impact)) : '';
+                    cr = impact < 0 ? fmt.format(Math.abs(impact)) : '';
+                } else {
+                    cr = impact > 0 ? fmt.format(Math.abs(impact)) : '';
+                    dr = impact < 0 ? fmt.format(Math.abs(impact)) : '';
+                }
+            } else if (t.secAccId === id) {
+                if (t.by === 'agent' && t.type !== 'agent_handover') return; 
+                if (['deposit', 'repay_princ', 'income', 'agent_handover'].includes(t.type)) {
+                    impact = t.amt; 
+                    dr = fmt.format(t.amt);
+                } else {
+                    impact = -t.amt; 
+                    cr = fmt.format(t.amt);
+                }
             }
         }
 
         bal += impact;
+  
+
+                // FIX: Swap colors so Dr (In) is Green and Cr (Out) is Red for Cash & Bank only
+        let drColor = (ac.type === 'cash' || ac.type === 'bank') ? 'green' : 'red';
+        let crColor = (ac.type === 'cash' || ac.type === 'bank') ? 'red' : 'green';
 
         h += `<tr>
             <td>${dateDisp(t.date)}</td>
             <td>${displayDesc}</td>
-            <td align="right" style="color:red">${dr}</td>
-            <td align="right" style="color:green">${cr}</td>
+            <td align="right" style="color:${drColor}">${dr}</td>
+            <td align="right" style="color:${crColor}">${cr}</td>
             <td align="right"><b>${fmt.format(bal)}</b></td>
-        </tr>`;
+        </tr>`;        
     });
 
     h += `<tr class="final-total-row"><td colspan="4">Closing Balance</td><td align="right">${fmt.format(bal)}</td></tr>`;
@@ -2897,21 +2941,24 @@ function generateDayBook(container, targetDate) {
 
     // 1. Calculate Opening Balance from Transactions (Source of Truth)
     // Sum all Cash/Bank impacts BEFORE the target date
-   DB.trans.filter(t => t.date < targetDate).forEach(t => {
-        // If the transaction involved a Cash/Bank account (secAccId)
-        // We need to see if money went IN or OUT of that specific account
-        if (t.type === 'agent_handover' || t.type === 'adjustment') {
-             // Handle double-entry types specifically here if they touch Cash
-             // For simplicity, ensure 'adjustment' types are checked for secAccId matches
-        }
-        
-        // Standard logic fix:
-        if (['deposit', 'repay_princ', 'income', 'agent_handover'].includes(t.type)) {
+    
+       DB.trans.filter(t => t.date < targetDate).forEach(t => {
+        if (t.by === 'agent' && t.type !== 'agent_handover') return;
+
+        if (t.type === 'adjustment') {
+            // FIX: Only affect opening cash if Cash was part of the adjustment
+            const drAcc = DB.accs.find(a => a.id === t.accId);
+            const crAcc = DB.accs.find(a => a.id === t.secAccId);
+            if (drAcc && (drAcc.type === 'cash' || drAcc.type === 'bank')) openingBal += t.amt;
+            if (crAcc && (crAcc.type === 'cash' || crAcc.type === 'bank')) openingBal -= t.amt;
+        } else if (['deposit', 'repay_princ', 'income', 'agent_handover'].includes(t.type)) {
             openingBal += t.amt;
         } else if (['withdraw', 'disburse', 'expense'].includes(t.type)) {
             openingBal -= t.amt;
         }
     });
+    
+    
 
     // 2. Filter Today's Transactions
     const dayTrans = DB.trans.filter(t => t.date === targetDate);
@@ -2920,20 +2967,31 @@ function generateDayBook(container, targetDate) {
     let dayPay = 0;
     let rowsHtml = '';
 
-    dayTrans.forEach(t => {
-        // Skip agent collections that aren't handed over yet (Contra)
+        dayTrans.forEach(t => {
         if (t.by === 'agent' && t.type !== 'agent_handover') return;
 
         const acc = DB.accs.find(a => a.id === t.accId);
         let rec = 0, pay = 0;
 
-        if (['deposit', 'repay_princ', 'income', 'agent_handover'].includes(t.type)) {
+        if (t.type === 'adjustment') {
+            // FIX: Put cash in the correct column based on Debit/Credit
+            const drAcc = DB.accs.find(a => a.id === t.accId);
+            const crAcc = DB.accs.find(a => a.id === t.secAccId);
+            const isCashDr = drAcc && (drAcc.type === 'cash' || drAcc.type === 'bank');
+            const isCashCr = crAcc && (crAcc.type === 'cash' || crAcc.type === 'bank');
+
+            if (isCashDr) { rec = t.amt; dayRec += t.amt; runningBal += t.amt; }
+            else if (isCashCr) { pay = t.amt; dayPay += t.amt; runningBal -= t.amt; }
+        }
+        else if (['deposit', 'repay_princ', 'income', 'agent_handover'].includes(t.type)) {
             rec = t.amt; dayRec += t.amt; runningBal += t.amt;
         } else {
             pay = t.amt; dayPay += t.amt; runningBal -= t.amt;
         }
 
         rowsHtml += `
+          
+        
             <tr>
                 <td>${acc ? acc.name : (t.type === 'agent_handover' ? 'Agent Handover' : 'Office')}</td>
                 <td>${t.desc || t.type}</td>
@@ -3190,23 +3248,37 @@ function generateBS(b, fd, td) {
     const absNetResult = Math.abs(netResult);
     const isProfit = netResult >= 0;
 
-    // 1. Calculate Admin Cash
-    const cashAcc = DB.accs.find(a => a.type === 'cash');
+  const cashAcc = DB.accs.find(a => a.type === 'cash');
     const bankAcc = DB.accs.find(a => a.type === 'bank');
-    
     let adminCash = (cashAcc ? getBal(cashAcc.id, dt) : 0) + (bankAcc ? getBal(bankAcc.id, dt) : 0);
     
-    // Calculate Agent Cash separately from transactions ONLY
-    let totalAgentCash = 0;
-    DB.trans.filter(t => t.date <= dt && t.by === 'agent').forEach(t => {
+       // 2. NEW: Calculate individual Agent Balances (Receivables)
+    let agentBalances = {}; 
+
+    // FIX: Removed the strict "t.by === 'agent'" filter so we can see Admin handovers too!
+    DB.trans.filter(t => t.date <= dt && t.agentId).forEach(t => {
+        
+        // FIX: Find the actual agent name using their ID
+        const ag = DB.agents.find(a => a.id === t.agentId);
+        const agentName = ag ? ag.user : "Unknown Agent"; 
+
+        if (!agentBalances[agentName]) agentBalances[agentName] = 0;
+
+        // Money the agent collected/paid out in the field
+        if (t.by === 'agent') {
+            if (['deposit', 'repay_princ', 'income'].includes(t.type)) {
+                agentBalances[agentName] += t.amt;
+            } else if (['withdraw', 'disburse', 'expense'].includes(t.type)) {
+                agentBalances[agentName] -= t.amt;
+            }
+        }
+        
+        // Money handed over to the Admin
         if (t.type === 'agent_handover') {
-            totalAgentCash -= t.amt;
-        } else if (['deposit', 'repay_princ', 'income'].includes(t.type)) {
-            totalAgentCash += t.amt;
-        } else if (['withdraw', 'disburse', 'expense'].includes(t.type)) {
-            totalAgentCash -= t.amt;
+            agentBalances[agentName] -= t.amt;
         }
     });
+
 
     // Helper to build sections (Assets/Liabilities) AND COUNT ROWS
    function buildSection(sectionType) {
@@ -3247,27 +3319,31 @@ function generateBS(b, fd, td) {
         // 2. NEW: Process Cash Positions (Assets side only)
         // This ensures Cash In Hand and Agent Cash appear under the "Cash" group
         if (sectionType === 'Asset' && g.name === "Cash") {
-            if (adminCash !== 0) {
-                groupSum += adminCash;
-                subRowsHtml += `<tr class="rep-sub-row">
-                    <td>Cash In Hand (Office)</td>
-                    <td class="rep-col-2">${fmt.format(adminCash)}</td>
-                    <td></td>
-                </tr>`;
-                subRowCount++;
-            }
-
-            if (totalAgentCash !== 0) {
-                groupSum += totalAgentCash;
-                subRowsHtml += `<tr class="rep-sub-row">
-                    <td>Cash with Agents</td>
-                    <td class="rep-col-2">${fmt.format(totalAgentCash)}</td>
-                    <td></td>
-                </tr>`;
-                subRowCount++;
-            }
+        // Office Cash
+        if (adminCash !== 0) {
+            groupSum += adminCash;
+            subRowsHtml += `<tr class="rep-sub-row">
+                <td>Cash In Hand (Office)</td>
+                <td class="rep-col-2">${fmt.format(adminCash)}</td>
+                <td></td>
+            </tr>`;
+            subRowCount++;
         }
 
+        // NEW: Individual Agent Receivables
+        Object.keys(agentBalances).forEach(agentName => {
+            const bal = agentBalances[agentName];
+            if (bal !== 0) {
+                groupSum += bal;
+                subRowsHtml += `<tr class="rep-sub-row" style="color: #2980b9;">
+                    <td>Receivable: ${agentName}</td>
+                    <td class="rep-col-2">${fmt.format(bal)}</td>
+                    <td></td>
+                </tr>`;
+                subRowCount++;
+            }
+        });
+    }
         // Only display the group if it has standard accounts OR cash balances
         if (subRowCount > 0) {
             html += `<tr class="rep-group-header">
@@ -3560,24 +3636,34 @@ function getBal(id, td, fd) {
     let runningBalance = 0;
     const targetAcc = DB.accs.find(a => a.id === id);
     if (!targetAcc) return 0;
+    
+    // Check if account normally holds a positive Debit balance
+    const group = DB.groups.find(g => g.name === targetAcc.group);
+    const isAssetOrExpense = group && (group.type === 'Asset' || group.type === 'Expense');
 
     DB.trans.filter(t => {
         const isMatch = (t.accId === id || t.secAccId === id);
         const isDateMatch = (!td || t.date <= td) && (!fd || t.date >= fd);
         return isMatch && isDateMatch;
     }).forEach(t => {
-        if (t.accId === id) {
-            // Impact on the Primary Account
-            runningBalance += (t.amt * getTxMod(targetAcc, t.type));
-        } else if (t.secAccId === id) {
-            // Impact on the Secondary (Cash/Bank) Account
-            // If the primary entry was a Receipt, Cash increases (+)
-            if (['deposit', 'repay_princ', 'repay_int', 'income', 'agent_handover'].includes(t.type)) {
-                runningBalance += t.amt;
-            } 
-            // If the primary entry was a Payment, Cash decreases (-)
-            else if (['withdraw', 'disburse', 'expense', 'payment'].includes(t.type)) {
-                runningBalance -= t.amt;
+        if (t.type === 'adjustment') {
+            // FIX: Special Double-Entry Rule for Adjustments
+            if (t.accId === id) { // Debit Side
+                runningBalance += isAssetOrExpense ? t.amt : -t.amt;
+            } else if (t.secAccId === id) { // Credit Side
+                runningBalance += isAssetOrExpense ? -t.amt : t.amt;
+            }
+        } else {
+            // Normal Transactions
+            if (t.accId === id) {
+                runningBalance += (t.amt * getTxMod(targetAcc, t.type));
+            } else if (t.secAccId === id) {
+                if (t.by === 'agent' && t.type !== 'agent_handover') return; 
+                if (['deposit', 'repay_princ', 'repay_int', 'income', 'agent_handover'].includes(t.type)) {
+                    runningBalance += t.amt;
+                } else if (['withdraw', 'disburse', 'expense', 'payment'].includes(t.type)) {
+                    runningBalance -= t.amt;
+                }
             }
         }
     });
@@ -3676,15 +3762,17 @@ function updateUI() {
     const expenseGroups = DB.groups.filter(g => g.type === 'Expense').map(g => g.name);
 
     // --- A. CALCULATE TOTAL CASH (ADMIN vs AGENT) ---
-    if (session.role === 'admin') {
-        // Admin sees the sum of actual Cash and Bank account balances
+  if (session.role === 'admin') {
         const cashAcc = DB.accs.find(a => a.type === 'cash');
         const bankAcc = DB.accs.find(a => a.type === 'bank');
         cashInHand = (cashAcc ? cashAcc.balance : 0) + (bankAcc ? bankAcc.balance : 0);
-    } else {
-        // Agent sees only what they currently hold (Collections - Handovers)
+    } 
+    // AGENT sees only their current collection holding
+    else {
         cashInHand = getAgentCashHolding(session.id);
     }
+
+    document.getElementById('d-tot-cash').innerText = fmt.format(cashInHand);
 
     // --- B. LOOP TRANSACTIONS FOR TODAY & OVERALL P/L ---
     DB.trans.forEach(t => {
@@ -4569,22 +4657,29 @@ function saveHandover() {
 
     if(!agentId || !amt || amt <= 0) return alert("Please select an agent and enter a valid amount.");
 
-    // Create a special transaction
+    // 1. Find the Admin's primary Cash Account
+    const cashAcc = DB.accs.find(a => a.type === 'cash');
+    if (cashAcc) {
+        cashAcc.balance += amt; // Now the money physically enters the Admin's cash account
+    }
+
+    // 2. Create the special handover transaction
     DB.trans.push({
         id: Date.now(),
         date: dateNow(),
-        accId: -1, // Internal system ID
-        type: 'agent_handover', // This type triggers the math
+        accId: -1, // System internal
+        secAccId: cashAcc ? cashAcc.id : 1, // Reference the cash account
+        type: 'agent_handover',
         amt: amt,
-        desc: 'Cash Handover to Admin',
+        desc: 'Cash Handover from Agent',
         agentId: agentId, 
-        by: 'admin'
+        by: 'admin' // Marked as admin receiving it
     });
 
     saveDB();
     document.getElementById('handover-amt').value = '';
-    updateHandoverDisplay(); // Refresh balance
-    alert(`Received ${fmt.format(amt)}. Agent balance updated.`);
+    updateHandoverDisplay(); 
+    alert(`Received ${fmt.format(amt)}. Money added to Office Cash.`);
 }
 
 // --- BACKUP & RESTORE FUNCTIONS ---
@@ -4718,6 +4813,13 @@ function openSetSub(id) {
         initPrinterUI(); // Refresh printer UI
     }
 }
+function initPrinterUI() {
+    // Determine which view to show based on saved settings
+    const method = DB.settings.printMethod || 'rawbt';
+    setPrinterDriver(method);
+}
+
+
 
 // 2. Navigation: Close Sub-Page (Back Button)
 function closeSetSub() {
@@ -5172,6 +5274,123 @@ document.addEventListener('click', function(event) {
     document.querySelector('.mobile-menu-dropdown')?.classList.add('hidden');
   }
 });
+
+function openAgentTab(tab) {
+    navTo('agents'); // Keeps your admin security working perfectly!
+    
+    // Hide all 3 cards, then show only the one you clicked
+    document.getElementById('ag-col').style.display = (tab === 'col') ? 'block' : 'none';
+    document.getElementById('ag-cre').style.display = (tab === 'cre') ? 'block' : 'none';
+    document.getElementById('ag-ass').style.display = (tab === 'ass') ? 'block' : 'none';
+}
+
+// --- PRINTER CONFIGURATION & BLUETOOTH MANAGER ---
+
+// 1. Switch between RawBT and Bluetooth UI in Settings
+function setPrinterDriver(type) {
+    document.querySelectorAll('.driver-select-card').forEach(el => el.classList.remove('active'));
+    document.getElementById('driver-' + type).classList.add('active');
+    
+    if (type === 'rawbt') {
+        document.getElementById('interface-rawbt').classList.remove('hidden');
+        document.getElementById('interface-ble').classList.add('hidden');
+    } else {
+        document.getElementById('interface-rawbt').classList.add('hidden');
+        document.getElementById('interface-ble').classList.remove('hidden');
+    }
+}
+
+// 2. The Missing Bluetooth (BLE) Manager
+const BLEManager = {
+    device: null,
+    server: null,
+    characteristic: null,
+
+        connect: async function() {
+        // 1. Check if the browser even supports Bluetooth
+        if (!navigator.bluetooth) {
+            return alert("Bluetooth is NOT available. \n\nOn mobile, this ONLY works if you are using HTTPS (secure site) or a browser that supports Web Bluetooth.");
+        }
+
+        try {
+            document.getElementById('ble-status-text').innerText = 'Searching...';
+            
+            // 2. Request the device
+            this.device = await navigator.bluetooth.requestDevice({
+                acceptAllDevices: true,
+                optionalServices: ['49535056-fe7d-4ae5-8fa9-9fafd205e455', '000018f0-0000-1000-8000-00805f9b34fb'] 
+            });
+
+            // 3. Connect to GATT
+            const server = await this.device.gatt.connect();
+            const services = await server.getPrimaryServices();
+            
+            // 4. Find the Writable Characteristic automatically
+            for (const service of services) {
+                const characteristics = await service.getCharacteristics();
+                for (const char of characteristics) {
+                    if (char.properties.write || char.properties.writeWithoutResponse) {
+                        this.characteristic = char;
+                        break;
+                    }
+                }
+                if (this.characteristic) break;
+            }
+
+            if (this.characteristic) {
+                document.getElementById('ble-status-text').innerText = 'Connected';
+                document.getElementById('ble-status-text').style.color = 'green';
+                document.getElementById('ble-device-name').innerText = this.device.name || 'Thermal Printer';
+                document.getElementById('btn-ble-scan').classList.add('hidden');
+                document.getElementById('btn-ble-disconnect').classList.remove('hidden');
+            }
+        } catch (error) {
+            document.getElementById('ble-status-text').innerText = 'Disconnected';
+            alert("Connection Error: " + error.message);
+        }
+    },
+    
+    
+
+    disconnect: function() {
+        if (this.device && this.device.gatt.connected) {
+            this.device.gatt.disconnect();
+        }
+        this.device = null;
+        this.server = null;
+        this.characteristic = null;
+        
+        if (document.getElementById('ble-status-text')) {
+            document.getElementById('ble-status-text').innerText = 'Disconnected';
+            document.getElementById('ble-status-text').style.color = 'black';
+            document.getElementById('ble-device-name').innerText = '-';
+            document.getElementById('btn-ble-scan').classList.remove('hidden');
+            document.getElementById('btn-ble-disconnect').classList.add('hidden');
+        }
+    },
+
+    printTest: async function() {
+        if (!this.characteristic) return alert("Connect printer first!");
+        
+        try {
+            const encoder = new TextEncoder();
+            const orgName = DB.settings.org || "MY FINANCE";
+            
+            // ESC/POS Commands: [Initialize, Center Align, Text, Bold Off, Line Feed]
+            const receipt = "\x1B\x40" + "\x1B\x61\x01" + orgName + "\n" + 
+                            "--------------------------------\n" +
+                            "MOBILE PRINT TEST SUCCESS\n" +
+                            "--------------------------------\n\n\n";
+            
+            await this.characteristic.writeValue(encoder.encode(receipt));
+        } catch (e) {
+            alert("Print failed: " + e.message);
+        }
+    }
+};
+
+
+
 
 </script>
 </body>
