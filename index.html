@@ -598,17 +598,17 @@ th{background:#f8f9fa;font-weight:bold;color:#555;white-space:nowrap}
             <div class="card" id="cust-create-card">
                 <h3>Add Customer</h3>
                 <form id="cust-form" class="flex-col">
-                    <div class="flex">
-                        <input id="cust-name" placeholder="Full Name" required>
-                        <input id="cust-ref" placeholder="Mobile / Place">
-                    </div>
-                    <button class="btn btn-primary">Create</button>
-                </form>
+    <div class="flex">
+        <input id="cust-name" placeholder="Full Name" required>
+        <input id="cust-ref" placeholder="Mobile / Place">
+        <input id="cust-addr" placeholder="Full Address"> 
+    </div>
+    <button class="btn btn-primary">Create</button>
+</form>
             </div>
             <input id="cust-search" placeholder="Search Customers..." onkeyup="updateUI()" style="margin-bottom:15px;">
-            <div class="table-responsive"><table id="cust-table"><thead><tr><th>ID</th><th>Name</th><th></th><th>Accs</th><th>Action</th></tr></thead><tbody id="cust-tbody"></tbody></table></div>
+            <div class="table-responsive"><table id="cust-table"><thead><tr><th>ID</th><th>Name</th><th>Mobile</th> <th>Address</th><th>Accs</th><th>Action</th></tr></thead><tbody id="cust-tbody"></tbody></table></div>
         </div>
-
         <div id="view-transactions" class="hidden">
             <div class="card">
                 <h3>New Transaction</h3>
@@ -1569,9 +1569,20 @@ document.addEventListener('DOMContentLoaded',()=>{
         if (DB.customers.some(c => c.name.toLowerCase() === document.getElementById('cust-name').value.toLowerCase())) return alert("Error: Customer Name already exists!");
         
         const newID='DR'+String(DB.customers.length+1).padStart(4,'0');
-        DB.customers.push({id:Date.now(),custNo:newID,name:document.getElementById('cust-name').value,ref:document.getElementById('cust-ref').value});
-        saveDB(); e.target.reset(); updateCustSelect(); alert('Customer Created');
+        DB.customers.push({
+        id: Date.now(),
+        custNo: newID,
+        name: document.getElementById('cust-name').value,
+        ref: document.getElementById('cust-ref').value,
+        address: document.getElementById('cust-addr').value // Saves the address
     });
+
+    saveDB(); 
+    e.target.reset(); 
+    updateCustSelect(); 
+    alert('Customer Created');
+});    
+    
     
 document.getElementById('trans-form').addEventListener('submit', function(e) {
     e.preventDefault();
@@ -1915,27 +1926,41 @@ function forgotPassword() {
 
 
 function initSession(role, id, username) {
-    // Store in memory (for current use)
+    // 1. Existing Session Logic
     session = { role, id, username };
-    
-    // SAVE TO LOCAL STORAGE (for refresh persistence)
     Safe.set('fbp_session', JSON.stringify(session));
     
     document.getElementById('login-view').classList.add('hidden');
     document.getElementById('app-view').classList.remove('hidden');
-    
     document.getElementById('user-role-display').innerText = `User: ${username} (${role.toUpperCase()})`;
     
-    // ... rest of your existing logic for hiding/showing admin menus ...
-    const els = ['admin-menu', 'cust-create-card', 'view-agents', 'view-ledgers', 'view-accountTypes', 'view-groups','btn-Adjustment Entry'];
+    // 2. Hide Admin Menus
+    const els = ['admin-menu', 'cust-create-card', 'view-agents', 'view-ledgers', 'view-accountTypes', 'view-groups', 'btn-Adjustment Entry'];
     els.forEach(eid => {
         const el = document.getElementById(eid);
         if (el) el.classList.toggle('hidden', role !== 'admin');
     });
-    
+
+    // --- NEW LOGIC: Prevent Back Button Logout ---
+    // This adds a "fake" entry to the browser history
+    window.history.pushState({ loggedIn: true }, "");
+
+    // This listens for when the user hits 'Back'
+    window.onpopstate = function(event) {
+        if (confirm("Do you want to Logout and Exit the app?")) {
+            logout(); // Runs your existing logout logic
+        } else {
+            // Force the history forward again to stay in the app
+            window.history.pushState({ loggedIn: true }, "");
+        }
+    };
+    // ---------------------------------------------
+
     navTo('dashboard');
     updateUI();
 }
+
+
 
 function logout() {
     // 1. First, confirm they actually want to exit
@@ -2061,11 +2086,22 @@ function navTo(page){
 function toggleSidebar(){document.body.classList.toggle('sidebar-open')}
 
 // Customer Functions
-function editCustomer(id){
-    const c=DB.customers.find(x=>x.id===id);
-    const n=prompt("Edit Name:",c.name); const r=prompt("Edit Ref:",c.ref);
-    if(n){ c.name=n; c.ref=r; saveDB(); updateCustSelect(); }
+function editCustomer(id) {
+    const c = DB.customers.find(x => x.id === id);
+    const n = prompt("Edit Name:", c.name); 
+    const r = prompt("Edit Mobile/Ref:", c.ref);
+    const a = prompt("Edit Address:", c.address || ""); // NEW: Prompt for Address
+
+    if (n !== null) { 
+        c.name = n; 
+        c.ref = r; 
+        c.address = a; // NEW: Save the updated address
+        saveDB(); 
+        updateCustSelect(); 
+        renderCustomerTable(); // Refresh the table to show changes
+    }
 }
+
 function deleteCustomer(id){
     if(!confirm("Delete?"))return;
     if(DB.accs.some(a=>a.custId===id && a.balance!==0)) return alert("Has balance");
@@ -2464,6 +2500,8 @@ function searchTransAccount(){
         d.onclick=()=>selectTransAccount(a); box.appendChild(d);
     });
 }
+
+
 function selectTransAccount(acc){
     document.getElementById('trans-search-results').style.display='none';
     document.getElementById('trans-search-input').value='';
@@ -2475,20 +2513,43 @@ function selectTransAccount(acc){
     document.getElementById('sel-acc-bal').innerText=fmt.format(acc.balance);
     document.getElementById('trans-date').value=dateNow();
     
-    // --- ADD THIS LINE ---
     populateSecondaryAccs(); 
 
-    const sel=document.getElementById('trans-type'); sel.innerHTML='';
+    const sel = document.getElementById('trans-type'); 
+    sel.innerHTML = '';
     const tLower = (acc.type || '').toLowerCase();
-    if(session.role==='agent'){
-        sel.innerHTML='<option value="deposit">Collection</option>'; 
-        if(tLower.includes('loan'))sel.innerHTML+='<option value="repay_princ">Repayment</option>';
+
+    // --- NEW CODE: Check if account belongs to Expense group ---
+    const accGroup = DB.groups.find(g => g.name === acc.group);
+    const isExpense = accGroup && accGroup.type === 'Expense';
+
+    // 1. Generate Options based on Role and Account Type
+    if(session.role === 'agent'){
+        sel.innerHTML = '<option value="deposit">Collection</option>'; 
+        if(tLower.includes('loan')) sel.innerHTML += '<option value="repay_princ">Repayment</option>';
     } else {
-        if(tLower.includes('loan')) sel.innerHTML='<option value="disburse">Disburse</option><option value="repay_princ">Repayment</option>';
-        else sel.innerHTML='<option value="deposit">Deposit/Receipt</option><option value="withdraw">Withdraw/Payment</option>';
+        if(tLower.includes('loan')) {
+            sel.innerHTML = '<option value="disburse">Disburse</option><option value="repay_princ">Repayment</option>';
+            
+            // Auto-select withdraw for expense accounts
+            if(isExpense) {
+                sel.value = 'disburse';
+            }
+        } else {
+            sel.innerHTML = '<option value="deposit">Deposit/Receipt</option><option value="withdraw">Withdraw/Payment</option>';
+            
+            // Auto-select withdraw for expense accounts
+            if(isExpense) {
+                sel.value = 'withdraw';
+            }
+        }
+    }
+    
+    // 2. Logic for Group Expenses: Default to Withdraw
+    if (tLower.includes('group')) {
+        sel.value = 'withdraw';
     }
 }
-
 
 function editTransaction(id) {
     editingTransId = id;
@@ -3860,15 +3921,15 @@ function renderCustomerTable(){
                  <button onclick="deleteCustomer(${c.id})" class="btn-sm btn-danger"><i class="fas fa-trash"></i></button>`:
                 '';
             
-            tbody.innerHTML+=`
-                <tr>
-                    <td>${c.custNo}</td>
-                    <td>${c.name}</td>
-                    <td>${c.ref}</td>
-                    <td>${accountCount}</td>
-                    <td>
-                        <button onclick="openCustomerProfile(${c.id})" class="btn-sm btn-info">View</button>
-                        ${actions}
+            tbody.innerHTML += `
+    <tr>
+        <td>${c.custNo}</td>
+        <td>${c.name}</td>
+        <td>${c.ref}</td>
+        <td>${c.address || '-'}</td> <td>${accountCount}</td>
+        <td>
+            <button onclick="openCustomerProfile(${c.id})" class="btn-sm btn-info">View</button>
+            ${actions}
                     </td>
                 </tr>
             `;
@@ -5388,6 +5449,40 @@ const BLEManager = {
         }
     }
 };
+// --- PREVENT LOGOUT ON BACK BUTTON / BACKSPACE ---
+
+// 1. Every time we switch pages, we tell the browser's history
+const originalNavTo = navTo; 
+navTo = function(page) {
+    originalNavTo(page);
+    // This creates a "fake" history entry so back button stays inside the app
+    history.pushState({ page: page }, "", "#" + page);
+};
+
+// 2. Listen for the back button (popstate)
+window.onpopstate = function(event) {
+    if (session.role) { // Only do this if we are logged in
+        if (event.state && event.state.page) {
+            // If there's a previous page in history, go there
+            originalNavTo(event.state.page);
+        } else {
+            // If we are at the beginning (Home/Dashboard), ask to logout
+            if (confirm("Do you want to exit and Logout?")) {
+                logout();
+            } else {
+                // Stay on dashboard if they click cancel
+                history.pushState({ page: 'dashboard' }, "", "#dashboard");
+            }
+        }
+    }
+};
+
+// 3. Initialize the first state when app loads
+window.addEventListener('load', () => {
+    if (session.role) {
+        history.replaceState({ page: 'dashboard' }, "", "#dashboard");
+    }
+});
 
 
 
